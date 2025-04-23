@@ -10,3 +10,13 @@ export const postReview = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+export const getReviewsForStore = async (req, res) => {
+    try {
+      const storeId = Number(req.params.storeId);
+      const reviews = await reviewService.getStoreReviews(storeId);
+      res.status(200).json({ reviews });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+};

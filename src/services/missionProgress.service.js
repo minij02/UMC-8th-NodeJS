@@ -8,3 +8,12 @@ export const challengeMission = async (data) => {
 
   return await progressRepo.challengeMission(data);
 };
+
+export const getInProgressMissions = async (memberId) => {
+  return await progressRepo.getInProgressMissionsByMemberId(memberId);
+};
+
+export const completeMission = async (progressId) => {
+  const success = await progressRepo.completeMissionProgress(progressId);
+  if (!success) throw new Error("해당 미션 도전 정보를 찾을 수 없습니다.");
+};

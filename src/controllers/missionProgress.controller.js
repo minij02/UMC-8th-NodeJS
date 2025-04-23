@@ -10,3 +10,31 @@ export const postChallenge = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+export const getInProgressMissionsByMember = async (req, res) => {
+  const memberId = Number(req.params.memberId);
+  if (isNaN(memberId)) {
+    return res.status(400).json({ error: "유효하지 않은 memberId 입니다." });
+  }
+
+  try {
+    const missions = await progressService.getInProgressMissions(memberId);
+    res.status(200).json({ missions });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const markMissionAsCompleted = async (req, res) => {
+  const progressId = Number(req.params.progressId);
+  if (isNaN(progressId)) {
+    return res.status(400).json({ error: "유효하지 않은 progressId입니다." });
+  }
+
+  try {
+    await progressService.completeMission(progressId);
+    res.status(200).json({ message: "미션이 완료 처리되었습니다." });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+};

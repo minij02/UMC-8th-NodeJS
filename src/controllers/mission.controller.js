@@ -10,3 +10,13 @@ export const createMission = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+export const getMissionsByStore = async (req, res) => {
+    try {
+      const storeId = Number(req.params.storeId);
+      const missions = await missionService.getMissionsForStore(storeId);
+      res.status(200).json({ missions });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+};

@@ -8,3 +8,7 @@ export const writeReview = async (reviewData) => {
 
   return await reviewRepo.addReview(reviewData);
 };
+
+export const getStoreReviews = async (storeId) => {
+    return await reviewRepo.getReviewsByStoreId(storeId);
+};
