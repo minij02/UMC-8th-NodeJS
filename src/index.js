@@ -1,12 +1,15 @@
 // const express = require('express')  // -> CommonJS
-import express from 'express'          // -> ES Module
+import express from 'express';          // -> ES Module
+import dotenv from "dotenv";
+import { createStore } from "./controllers/store.controller.js";
 
-const app = express()
-const port = 3000
+dotenv.config();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const app = express();
+app.use(express.json());
+const port = 3000;
+
+app.post("/stores", createStore);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
