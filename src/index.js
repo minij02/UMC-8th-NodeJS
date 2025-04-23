@@ -2,6 +2,7 @@
 import express from 'express';          // -> ES Module
 import dotenv from "dotenv";
 import { createStore } from "./controllers/store.controller.js";
+import { postReview } from "./controllers/review.controller.js";
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 const port = 3000;
 
 app.post("/stores", createStore);
+app.post("/reviews", postReview);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
