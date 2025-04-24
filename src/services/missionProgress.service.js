@@ -1,4 +1,5 @@
 import * as progressRepo from "../repositories/missionProgress.repository.js";
+import { cursorPaginationDTO } from "../dtos/pagination.dto.js";
 
 export const challengeMission = async (data) => {
   const alreadyChallenged = await progressRepo.hasAlreadyChallenged(data.member_id, data.mission_id);
@@ -9,8 +10,9 @@ export const challengeMission = async (data) => {
   return await progressRepo.challengeMission(data);
 };
 
-export const getInProgressMissions = async (memberId) => {
-  return await progressRepo.getInProgressMissionsByMemberId(memberId);
+export const getInProgressMissions = async (memberId, cursor) => {
+  const data = await progressRepo.getInProgressMissionsByMemberId(memberId, cursor);
+  return cursorPaginationDTO(data, "progress_id");
 };
 
 export const completeMission = async (progressId) => {

@@ -20,9 +20,10 @@ export const challengeMission = async ({ mission_id, member_id }) => {
 };
 
 // 도전 중인 미션 조회
-export const getInProgressMissionsByMemberId = async (memberId) => {
+export const getInProgressMissionsByMemberId = async (memberId, cursor = 0) => {
   const query = `
     SELECT 
+      mp.progress_id,
       mp.mission_id,
       s.store_name,
       m.minimum_amount,
@@ -35,9 +36,11 @@ export const getInProgressMissionsByMemberId = async (memberId) => {
     JOIN STORE s ON m.store_id = s.store_id
     WHERE mp.member_id = ?
       AND mp.status = 'IN_PROGRESS'
-    ORDER BY mp.requested_at DESC
+      ${cursor ? "AND mp.progress_id > ?" : ""}
+    ORDER BY mp.progress_id ASC
+    LIMIT 5
   `;
-  const [rows] = await pool.query(query, [memberId]);
+  const [rows] = await pool.query(query, cursor ? [memberId, cursor] : [memberId]);
   return rows;
 };
 

@@ -3,8 +3,10 @@ import express from 'express';          // -> ES Module
 import dotenv from "dotenv";
 import { register, getUserInfo } from "./controllers/user.controller.js";
 import { createStore } from "./controllers/store.controller.js";
+import { handleListStoreMissions } from './controllers/storeMission.controller.js';
 import { postReview, getReviewsForStore } from "./controllers/review.controller.js";
 import { createMission, getMissionsByStore } from "./controllers/mission.controller.js";
+import { handleListMyReviews } from "./controllers/userReview.controller.js";
 import { postChallenge, getInProgressMissionsByMember, markMissionAsCompleted } from "./controllers/missionProgress.controller.js";
 
 dotenv.config();
@@ -17,8 +19,8 @@ app.post("/users", register);
 app.get("/users/:id", getUserInfo);
 app.get("/members/:memberId/missions/in-progress", getInProgressMissionsByMember);
 app.post("/stores", createStore);
-app.get("/stores/:storeId/reviews", getReviewsForStore);
-app.get("/stores/:storeId/missions", getMissionsByStore);
+app.get("/stores/:storeId/reviews", handleListMyReviews);
+app.get("/stores/:storeId/missions", handleListStoreMissions);
 app.post("/reviews", postReview);
 app.post("/missions", createMission);
 app.post("/missions/challenge", postChallenge);

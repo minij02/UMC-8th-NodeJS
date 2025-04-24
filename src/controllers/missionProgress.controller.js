@@ -13,12 +13,14 @@ export const postChallenge = async (req, res) => {
 
 export const getInProgressMissionsByMember = async (req, res) => {
   const memberId = Number(req.params.memberId);
+  const cursor = req.query.cursor ? Number(req.query.cursor) : 0;
+
   if (isNaN(memberId)) {
     return res.status(400).json({ error: "유효하지 않은 memberId 입니다." });
   }
 
   try {
-    const missions = await progressService.getInProgressMissions(memberId);
+    const missions = await progressService.getInProgressMissions(memberId, cursor);
     res.status(200).json({ missions });
   } catch (err) {
     res.status(500).json({ error: err.message });
