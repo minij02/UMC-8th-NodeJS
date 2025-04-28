@@ -1,16 +1,27 @@
-import { pool } from "../config/db.js";
+import { prisma } from '../lib/prisma.js';
 
 export const getReviewsByMemberId = async (memberId, cursor) => {
-  const query = `
-    SELECT r.review_id, r.rating, r.content, r.created_at, s.store_name
-    FROM REVIEW r
-    JOIN MISSION m ON r.mission_id = m.mission_id
-    JOIN STORE s ON m.store_id = s.store_id
-    WHERE r.member_id = ?
-    ${cursor ? "AND r.review_id > ?" : ""}
-    ORDER BY r.review_id ASC
-    LIMIT 5
-  `;
-  const [rows] = await pool.query(query, cursor ? [memberId, cursor] : [memberId]);
-  return rows;
+  const reviews = await prisma.rEVIEW.findMany({
+    where: {
+      member_id: memberId,
+      ...(cursor && { review_id: { gt: cursor } }),
+    },
+    include: {
+      mission: {
+        include: {
+          store: true,
+        },
+      },
+    },
+    orderBy: { review_id: 'asc' },
+    take: 5,
+  });
+
+  return reviews.map((review) => ({
+    review_id: review.review_id,
+    rating: review.rating,
+    content: review.content,
+    created_at: review.created_at,
+    store_name: review.mission.store.store_name,
+  }));
 };

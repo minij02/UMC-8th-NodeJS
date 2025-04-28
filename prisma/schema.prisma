@@ -1,0 +1,211 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Status {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  PENDING
+  ANSWERED
+  CLOSED
+}
+
+enum Provider {
+  KAKAO
+  NAVER
+  GOOGLE
+  APPLE
+}
+
+enum FoodCategory {
+  KOREAN
+  CHINESE
+  JAPANESE
+  WESTERN
+  ETC
+}
+
+model MEMBER {
+  member_id Int    @id @default(autoincrement())
+  username  String @db.VarChar(100)
+  email     String @db.VarChar(100)
+  gender    Gender
+  birth_date DateTime?
+  created_at DateTime?
+  updated_at DateTime?
+
+  missionProgresses MISSIONPROGRESS[]
+  reviews           REVIEW[]
+  pointHistories    POINTHISTORY[]
+  inquiries         INQUIRY[]
+  notificationSetting NOTIFICATIONSETTING?
+  termsAgreements   TERMSAGREEMENT[]
+  socialLogins      SOCIALLOGIN[]
+  addresses         ADDRESS[]
+  foodPreferences   FOODPREFERENCE[]
+}
+
+model REGION {
+  region_id Int     @id @default(autoincrement())
+  name      String  @db.VarChar(100)
+
+  stores   STORE[]
+  missions MISSION[]
+}
+
+model STORE {
+  store_id  Int     @id @default(autoincrement())
+  store_name String @db.VarChar(100)
+  category   String @db.VarChar(50)
+  address    String @db.VarChar(255)
+  region_id  Int
+  rating     Decimal @db.Decimal(3,2)
+  is_open    Boolean
+
+  region REGION @relation(fields: [region_id], references: [region_id])
+  missions MISSION[]
+}
+
+model MISSION {
+  mission_id     Int    @id @default(autoincrement())
+  store_id       Int
+  region_id      Int
+  minimum_amount Int
+  reward_points  Int
+  deadline_days  Int
+
+  store  STORE  @relation(fields: [store_id], references: [store_id])
+  region REGION @relation(fields: [region_id], references: [region_id])
+  progresses MISSIONPROGRESS[]
+  reviews    REVIEW[]
+  pointHistories POINTHISTORY[]
+}
+
+model MISSIONPROGRESS {
+  progress_id   Int    @id @default(autoincrement())
+  mission_id    Int
+  member_id     Int
+  status        Status
+  requested_at  DateTime?
+  completed_at  DateTime?
+
+  mission MISSION @relation(fields: [mission_id], references: [mission_id])
+  member  MEMBER  @relation(fields: [member_id], references: [member_id])
+}
+
+model REVIEW {
+  review_id   Int    @id @default(autoincrement())
+  mission_id  Int
+  member_id   Int
+  rating      Int
+  content     String
+  created_at  DateTime?
+
+  mission MISSION @relation(fields: [mission_id], references: [mission_id])
+  member  MEMBER  @relation(fields: [member_id], references: [member_id])
+  images  REVIEWIMAGE[]
+}
+
+model REVIEWIMAGE {
+  image_id  Int    @id @default(autoincrement())
+  review_id Int
+  image_url String @db.VarChar(255)
+
+  review REVIEW @relation(fields: [review_id], references: [review_id])
+}
+
+model POINTHISTORY {
+  point_id  Int    @id @default(autoincrement())
+  member_id Int
+  mission_id Int
+  points    Int
+  earned_date DateTime?
+
+  member  MEMBER  @relation(fields: [member_id], references: [member_id])
+  mission MISSION @relation(fields: [mission_id], references: [mission_id])
+}
+
+model INQUIRY {
+  inquiry_id Int    @id @default(autoincrement())
+  member_id  Int
+  title      String @db.VarChar(255)
+  content    String
+  created_at DateTime?
+  status     Status
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+}
+
+model NOTIFICATIONSETTING {
+  setting_id  Int    @id @default(autoincrement())
+  member_id   Int    @unique
+  new_event   Boolean
+  review_reply Boolean
+  inquiry_reply Boolean
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+}
+
+model TERMS {
+  term_id   Int    @id @default(autoincrement())
+  title     String @db.VarChar(255)
+  content   String
+  is_required Boolean
+  version   String @db.VarChar(50)
+  created_at DateTime?
+
+  termsAgreements TERMSAGREEMENT[]
+}
+
+model TERMSAGREEMENT {
+  agreement_id Int    @id @default(autoincrement())
+  member_id    Int
+  term_id      Int
+  agreed_at    DateTime?
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+  term   TERMS  @relation(fields: [term_id], references: [term_id])
+}
+
+model SOCIALLOGIN {
+  social_id    Int    @id @default(autoincrement())
+  member_id    Int
+  provider     Provider
+  provider_uid String @db.VarChar(255)
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+}
+
+model ADDRESS {
+  address_id Int    @id @default(autoincrement())
+  member_id  Int
+  address    String @db.VarChar(255)
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+}
+
+model FOODPREFERENCE {
+  preference_id Int    @id @default(autoincrement())
+  member_id     Int
+  category      FoodCategory
+
+  member MEMBER @relation(fields: [member_id], references: [member_id])
+}

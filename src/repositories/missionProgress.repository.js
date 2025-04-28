@@ -1,57 +1,58 @@
-import { pool } from "../config/db.js";
+import { prisma } from '../lib/prisma.js';
 
 // 이미 도전 중인지 확인
 export const hasAlreadyChallenged = async (member_id, mission_id) => {
-  const [rows] = await pool.query(
-    "SELECT * FROM MISSIONPROGRESS WHERE member_id = ? AND mission_id = ?",
-    [member_id, mission_id]
-  );
-  return rows.length > 0;
+  const missionProgress = await prisma.mISSIONPROGRESS.findFirst({
+    where: {
+      member_id,
+      mission_id,
+    },
+  });
+  return missionProgress !== null;
 };
 
 // 도전 정보 등록
 export const challengeMission = async ({ mission_id, member_id }) => {
-  const query = `
-    INSERT INTO MISSIONPROGRESS (mission_id, member_id, status, requested_at)
-    VALUES (?, ?, 'IN_PROGRESS', NOW())
-  `;
-  const [result] = await pool.query(query, [mission_id, member_id]);
-  return result.insertId;
+  const result = await prisma.mISSIONPROGRESS.create({
+    data: {
+      mission_id,
+      member_id,
+      status: 'IN_PROGRESS',
+      requested_at: new Date(),
+    },
+  });
+  return result.progress_id;
 };
 
 // 도전 중인 미션 조회
-export const getInProgressMissionsByMemberId = async (memberId, cursor = 0) => {
-  const query = `
-    SELECT 
-      mp.progress_id,
-      mp.mission_id,
-      s.store_name,
-      m.minimum_amount,
-      m.reward_points,
-      m.deadline_days,
-      mp.status,
-      mp.requested_at
-    FROM MISSIONPROGRESS mp
-    JOIN MISSION m ON mp.mission_id = m.mission_id
-    JOIN STORE s ON m.store_id = s.store_id
-    WHERE mp.member_id = ?
-      AND mp.status = 'IN_PROGRESS'
-      ${cursor ? "AND mp.progress_id > ?" : ""}
-    ORDER BY mp.progress_id ASC
-    LIMIT 5
-  `;
-  const [rows] = await pool.query(query, cursor ? [memberId, cursor] : [memberId]);
-  return rows;
+export const getInProgressMissionsByMemberId = async (memberId, cursor) => {
+  const progresses = await prisma.mISSIONPROGRESS.findMany({
+    where: {
+      member_id: memberId,
+      status: 'IN_PROGRESS',
+      ...(cursor && { progress_id: { gt: cursor } }),
+    },
+    include: {
+      mission: {
+        include: {
+          store: true,
+        },
+      },
+    },
+    orderBy: { progress_id: 'asc' },
+    take: 5,
+  });
+  return progresses;
 };
 
-// 미션 완료 처리리
+// 미션 완료 처리
 export const completeMissionProgress = async (progressId) => {
-  const query = `
-    UPDATE MISSIONPROGRESS
-    SET status = 'COMPLETED',
-        completed_at = NOW()
-    WHERE progress_id = ?
-  `;
-  const [result] = await pool.query(query, [progressId]);
-  return result.affectedRows > 0;
+  const result = await prisma.mISSIONPROGRESS.update({
+    where: { progress_id: progressId },
+    data: {
+      status: 'COMPLETED',
+      completed_at: new Date(),
+    },
+  });
+  return !!result;
 };

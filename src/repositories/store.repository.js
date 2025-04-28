@@ -1,10 +1,22 @@
-import { pool } from "../config/db.js";
+import { prisma } from '../lib/prisma.js';
+
+export const isStoreExist = async (storeId) => {
+  const store = await prisma.sTORE.findUnique({
+    where: { store_id: storeId },
+  });
+  return store !== null;
+};
 
 export const createStore = async ({ store_name, category, address, region_id }) => {
-  const query = `
-    INSERT INTO STORE (store_name, category, address, region_id, rating, is_open)
-    VALUES (?, ?, ?, ?, 0, true)
-  `;
-  const [result] = await pool.query(query, [store_name, category, address, region_id]);
-  return result.insertId;
+  const result = await prisma.sTORE.create({
+    data: {
+      store_name,
+      category,
+      address,
+      region_id,
+      rating: 0,
+      is_open: true,
+    },
+  });
+  return result.store_id;
 };

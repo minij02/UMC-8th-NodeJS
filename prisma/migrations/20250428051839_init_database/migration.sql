@@ -1,0 +1,214 @@
+-- CreateTable
+CREATE TABLE `MEMBER` (
+    `member_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    `gender` ENUM('MALE', 'FEMALE', 'OTHER') NOT NULL,
+    `birth_date` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NULL,
+    `updated_at` DATETIME(3) NULL,
+
+    PRIMARY KEY (`member_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `REGION` (
+    `region_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100) NOT NULL,
+
+    PRIMARY KEY (`region_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `STORE` (
+    `store_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `store_name` VARCHAR(100) NOT NULL,
+    `category` VARCHAR(50) NOT NULL,
+    `address` VARCHAR(255) NOT NULL,
+    `region_id` INTEGER NOT NULL,
+    `rating` DECIMAL(3, 2) NOT NULL,
+    `is_open` BOOLEAN NOT NULL,
+
+    PRIMARY KEY (`store_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `MISSION` (
+    `mission_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `store_id` INTEGER NOT NULL,
+    `region_id` INTEGER NOT NULL,
+    `minimum_amount` INTEGER NOT NULL,
+    `reward_points` INTEGER NOT NULL,
+    `deadline_days` INTEGER NOT NULL,
+
+    PRIMARY KEY (`mission_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `MISSIONPROGRESS` (
+    `progress_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `mission_id` INTEGER NOT NULL,
+    `member_id` INTEGER NOT NULL,
+    `status` ENUM('REQUESTED', 'IN_PROGRESS', 'COMPLETED', 'PENDING', 'ANSWERED', 'CLOSED') NOT NULL,
+    `requested_at` DATETIME(3) NULL,
+    `completed_at` DATETIME(3) NULL,
+
+    PRIMARY KEY (`progress_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `REVIEW` (
+    `review_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `mission_id` INTEGER NOT NULL,
+    `member_id` INTEGER NOT NULL,
+    `rating` INTEGER NOT NULL,
+    `content` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NULL,
+
+    PRIMARY KEY (`review_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `REVIEWIMAGE` (
+    `image_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `review_id` INTEGER NOT NULL,
+    `image_url` VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (`image_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `POINTHISTORY` (
+    `point_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `mission_id` INTEGER NOT NULL,
+    `points` INTEGER NOT NULL,
+    `earned_date` DATETIME(3) NULL,
+
+    PRIMARY KEY (`point_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `INQUIRY` (
+    `inquiry_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `content` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME(3) NULL,
+    `status` ENUM('REQUESTED', 'IN_PROGRESS', 'COMPLETED', 'PENDING', 'ANSWERED', 'CLOSED') NOT NULL,
+
+    PRIMARY KEY (`inquiry_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `NOTIFICATIONSETTING` (
+    `setting_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `new_event` BOOLEAN NOT NULL,
+    `review_reply` BOOLEAN NOT NULL,
+    `inquiry_reply` BOOLEAN NOT NULL,
+
+    UNIQUE INDEX `NOTIFICATIONSETTING_member_id_key`(`member_id`),
+    PRIMARY KEY (`setting_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TERMS` (
+    `term_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `content` VARCHAR(191) NOT NULL,
+    `is_required` BOOLEAN NOT NULL,
+    `version` VARCHAR(50) NOT NULL,
+    `created_at` DATETIME(3) NULL,
+
+    PRIMARY KEY (`term_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TERMSAGREEMENT` (
+    `agreement_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `term_id` INTEGER NOT NULL,
+    `agreed_at` DATETIME(3) NULL,
+
+    PRIMARY KEY (`agreement_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `SOCIALLOGIN` (
+    `social_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `provider` ENUM('KAKAO', 'NAVER', 'GOOGLE', 'APPLE') NOT NULL,
+    `provider_uid` VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (`social_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ADDRESS` (
+    `address_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `address` VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (`address_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `FOODPREFERENCE` (
+    `preference_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `member_id` INTEGER NOT NULL,
+    `category` ENUM('KOREAN', 'CHINESE', 'JAPANESE', 'WESTERN', 'ETC') NOT NULL,
+
+    PRIMARY KEY (`preference_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `STORE` ADD CONSTRAINT `STORE_region_id_fkey` FOREIGN KEY (`region_id`) REFERENCES `REGION`(`region_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MISSION` ADD CONSTRAINT `MISSION_store_id_fkey` FOREIGN KEY (`store_id`) REFERENCES `STORE`(`store_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MISSION` ADD CONSTRAINT `MISSION_region_id_fkey` FOREIGN KEY (`region_id`) REFERENCES `REGION`(`region_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MISSIONPROGRESS` ADD CONSTRAINT `MISSIONPROGRESS_mission_id_fkey` FOREIGN KEY (`mission_id`) REFERENCES `MISSION`(`mission_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MISSIONPROGRESS` ADD CONSTRAINT `MISSIONPROGRESS_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `REVIEW` ADD CONSTRAINT `REVIEW_mission_id_fkey` FOREIGN KEY (`mission_id`) REFERENCES `MISSION`(`mission_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `REVIEW` ADD CONSTRAINT `REVIEW_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `REVIEWIMAGE` ADD CONSTRAINT `REVIEWIMAGE_review_id_fkey` FOREIGN KEY (`review_id`) REFERENCES `REVIEW`(`review_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `POINTHISTORY` ADD CONSTRAINT `POINTHISTORY_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `POINTHISTORY` ADD CONSTRAINT `POINTHISTORY_mission_id_fkey` FOREIGN KEY (`mission_id`) REFERENCES `MISSION`(`mission_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `INQUIRY` ADD CONSTRAINT `INQUIRY_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `NOTIFICATIONSETTING` ADD CONSTRAINT `NOTIFICATIONSETTING_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TERMSAGREEMENT` ADD CONSTRAINT `TERMSAGREEMENT_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TERMSAGREEMENT` ADD CONSTRAINT `TERMSAGREEMENT_term_id_fkey` FOREIGN KEY (`term_id`) REFERENCES `TERMS`(`term_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `SOCIALLOGIN` ADD CONSTRAINT `SOCIALLOGIN_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ADDRESS` ADD CONSTRAINT `ADDRESS_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `FOODPREFERENCE` ADD CONSTRAINT `FOODPREFERENCE_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `MEMBER`(`member_id`) ON DELETE RESTRICT ON UPDATE CASCADE;

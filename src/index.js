@@ -2,8 +2,7 @@
 import express from 'express';          // -> ES Module
 import dotenv from "dotenv";
 import { register, getUserInfo } from "./controllers/user.controller.js";
-import { createStore } from "./controllers/store.controller.js";
-import { handleListStoreMissions } from './controllers/storeMission.controller.js';
+import { createStore, handleListStoreMissions } from "./controllers/store.controller.js";
 import { postReview, getReviewsForStore } from "./controllers/review.controller.js";
 import { createMission, getMissionsByStore } from "./controllers/mission.controller.js";
 import { handleListMyReviews } from "./controllers/userReview.controller.js";
