@@ -1,7 +1,8 @@
 import * as reviewRepo from "../repositories/review.repository.js";
+import * as storeRepo from "../repositories/store.repository.js";
 
 export const writeReview = async (reviewData) => {
-  const storeExists = await reviewRepo.isStoreExist(reviewData.store_id);
+  const storeExists = await storeRepo.isStoreExist(reviewData.store_id);
   if (!storeExists) {
     throw new Error("존재하지 않는 가게입니다.");
   }
