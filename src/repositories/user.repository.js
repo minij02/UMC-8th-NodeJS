@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../config/db.js';
 
 export const createUser = async ({ username, email, gender, birth_date }) => {
   const result = await prisma.mEMBER.create({

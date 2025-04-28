@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../config/db.js';
 
 export const isStoreExist = async (storeId) => {
   const store = await prisma.sTORE.findUnique({

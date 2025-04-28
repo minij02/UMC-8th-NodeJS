@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../config/db.js';
 
 // 리뷰 추가
 export const addReview = async ({ mission_id, member_id, rating, content }) => {

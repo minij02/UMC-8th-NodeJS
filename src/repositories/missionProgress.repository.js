@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../config/db.js';
 
 // 이미 도전 중인지 확인
 export const hasAlreadyChallenged = async (member_id, mission_id) => {

@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../config/db.js';
 
 export const getReviewsByMemberId = async (memberId, cursor) => {
   const reviews = await prisma.rEVIEW.findMany({
