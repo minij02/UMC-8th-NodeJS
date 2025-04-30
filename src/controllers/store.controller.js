@@ -2,7 +2,7 @@ import { validateCreateStoreDto } from "../dtos/store.dto.js";
 import * as storeService from "../services/store.service.js";
 import { listStoreMissions } from "../services/store.service.js";
 
-export const createStore = async (req, res) => {
+export const createStore = async (req, res, next) => {
   try {
     const storeData = validateCreateStoreDto(req.body); // DTO로 유효성 검사
     const storeId = await storeService.addStore(storeData);
@@ -12,7 +12,7 @@ export const createStore = async (req, res) => {
   }
 };
 
-export const handleListStoreMissions = async (req, res) => {
+export const handleListStoreMissions = async (req, res, next) => {
   const storeId = Number(req.params.storeId);
   const cursor = req.query.cursor ? Number(req.query.cursor) : 0;
 

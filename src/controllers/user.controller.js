@@ -1,7 +1,7 @@
 import { validateSignUpDto } from "../dtos/user.dto.js";
 import * as userService from "../services/user.service.js";
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   try {
     const userData = validateSignUpDto(req.body);
     const memberId = await userService.signUp(userData);
@@ -11,7 +11,7 @@ export const register = async (req, res) => {
   }
 };
 
-export const getUserInfo = async (req, res) => {
+export const getUserInfo = async (req, res, next) => {
   try {
     const memberId = Number(req.params.id);
     const user = await userService.getUser(memberId);

@@ -1,6 +1,6 @@
 import { listMyReviews } from "../services/userReview.service.js";
 
-export const handleListMyReviews = async (req, res) => {
+export const handleListMyReviews = async (req, res, next) => {
   const memberId = Number(req.params.memberId);
   const cursor = req.query.cursor ? Number(req.query.cursor) : 0;
 
