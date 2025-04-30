@@ -18,7 +18,7 @@ app.post("/users", register);
 app.get("/users/:id", getUserInfo);
 app.get("/members/:memberId/missions/in-progress", getInProgressMissionsByMember);
 app.post("/stores", createStore);
-app.get("/stores/:memberId/reviews", handleListMyReviews);
+app.get("/members/:memberId/reviews", handleListMyReviews);
 app.get("/stores/:storeId/missions", handleListStoreMissions);
 app.post("/reviews", postReview);
 app.post("/missions", createMission);
