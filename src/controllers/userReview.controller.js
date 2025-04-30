@@ -8,6 +8,10 @@ export const handleListMyReviews = async (req, res) => {
     return res.status(400).json({ error: "유효하지 않은 memberId입니다." });
   }
 
-  const result = await listMyReviews(memberId, cursor);
-  res.status(200).json(result);
+  try {
+    const result = await listMyReviews(memberId, cursor);
+    res.status(200).success(result);
+  } catch (err) {
+    next(err);
+  }
 };

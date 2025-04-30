@@ -8,7 +8,7 @@ export const createStore = async (req, res) => {
     const storeId = await storeService.addStore(storeData);
     res.status(201).json({ message: "Store created", storeId });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 };
 
@@ -24,6 +24,6 @@ export const handleListStoreMissions = async (req, res) => {
     const result = await listStoreMissions(storeId, cursor);
     res.status(200).json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };

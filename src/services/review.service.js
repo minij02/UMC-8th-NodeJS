@@ -1,10 +1,11 @@
 import * as reviewRepo from "../repositories/review.repository.js";
 import * as storeRepo from "../repositories/store.repository.js";
+import { NotFoundError } from "../error.js";
 
 export const writeReview = async (reviewData) => {
   const storeExists = await storeRepo.isStoreExist(reviewData.store_id);
   if (!storeExists) {
-    throw new Error("존재하지 않는 가게입니다.");
+    throw new NotFoundError("가게");
   }
 
   return await reviewRepo.addReview(reviewData);
