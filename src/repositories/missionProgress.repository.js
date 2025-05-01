@@ -1,4 +1,5 @@
 import { prisma } from '../config/db.js';
+import { Prisma } from "@prisma/client";
 
 // 이미 도전 중인지 확인
 export const hasAlreadyChallenged = async (member_id, mission_id) => {
@@ -47,12 +48,24 @@ export const getInProgressMissionsByMemberId = async (memberId, cursor) => {
 
 // 미션 완료 처리
 export const completeMissionProgress = async (progressId) => {
-  const result = await prisma.mISSIONPROGRESS.update({
-    where: { progress_id: progressId },
-    data: {
-      status: 'COMPLETED',
-      completed_at: new Date(),
-    },
-  });
-  return !!result;
+  try {
+    await prisma.mISSIONPROGRESS.update({
+      where: { progress_id: progressId },
+      data: {
+        status: "COMPLETED",
+        completed_at: new Date(),
+      },
+    });
+    return true;
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
+      // 해당 progress_id가 존재하지 않아 update 실패
+      return false;
+    }
+    // 다른 에러는 그대로 throw (DB 연결 실패 등)
+    throw err;
+  }
 };

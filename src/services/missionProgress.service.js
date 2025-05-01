@@ -18,5 +18,5 @@ export const getInProgressMissions = async (memberId, cursor) => {
 
 export const completeMission = async (progressId) => {
   const success = await progressRepo.completeMissionProgress(progressId);
-  if (!success) throw new NotFoundError("미션 도전 정보");
+  if (!success) throw new NotFoundError("미션 도전 정보", { progressId });
 };
