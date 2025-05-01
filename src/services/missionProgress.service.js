@@ -1,4 +1,5 @@
 import * as progressRepo from "../repositories/missionProgress.repository.js";
+import { findUserById } from "../repositories/user.repository.js";
 import { cursorPaginationDTO } from "../dtos/pagination.dto.js";
 import { AlreadyChallengedError, NotFoundError } from "../error.js";
 
@@ -12,6 +13,11 @@ export const challengeMission = async (data) => {
 };
 
 export const getInProgressMissions = async (memberId, cursor) => {
+  const member = await findUserById(memberId);
+  if (!member) {
+    throw new NotFoundError("사용자", { memberId });
+  }
+
   const data = await progressRepo.getInProgressMissionsByMemberId(memberId, cursor);
   return cursorPaginationDTO(data, "progress_id");
 };
