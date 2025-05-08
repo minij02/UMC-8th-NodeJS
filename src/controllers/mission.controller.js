@@ -2,7 +2,7 @@ import { validateCreateMissionDto } from "../dtos/mission.dto.js";
 import * as missionService from "../services/mission.service.js";
 
 export const createMission = async (req, res, next) => {
-   /*
+    /*
     #swagger.summary = '미션 생성 API';
     #swagger.requestBody = {
       required: true,
@@ -29,8 +29,28 @@ export const createMission = async (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              message: { type: "string" },
-              missionId: { type: "number" }
+              message: { type: "string", example: "미션 등록 완료" },
+              missionId: { type: "number", example: 1001 }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "입력값 오류",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "M001" },
+                  reason: { type: "string", example: "모든 필드는 필수입니다." }
+                }
+              }
             }
           }
         }
@@ -49,7 +69,11 @@ export const createMission = async (req, res, next) => {
 export const getMissionsByStore = async (req, res, next) => {
   /*
     #swagger.summary = '매장 미션 목록 조회 API';
-    #swagger.parameters['storeId'] = { in: 'path', type: 'number', required: true };
+    #swagger.parameters['storeId'] = {
+      in: 'path',
+      required: true,
+      schema: { type: 'number', example: 1 }
+    };
     #swagger.responses[200] = {
       description: "미션 목록 조회 성공",
       content: {
@@ -59,7 +83,35 @@ export const getMissionsByStore = async (req, res, next) => {
             properties: {
               missions: {
                 type: "array",
-                items: { type: "object" }
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    title: { type: "string" },
+                    reward_points: { type: "number" },
+                    deadline_days: { type: "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "storeId 파라미터 오류",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "INVALID_PARAM" },
+                  reason: { type: "string", example: "유효하지 않은 storeId입니다." }
+                }
               }
             }
           }

@@ -26,8 +26,28 @@ export const postChallenge = async (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              progressId: { type: "number" },
-              message: { type: "string" }
+              message: { type: "string", example: "미션 도전 완료" },
+              progressId: { type: "number", example: 2001 }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "입력값 오류",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "MP001" },
+                  reason: { type: "string", example: "mission_id와 member_id는 필수입니다." }
+                }
+              }
             }
           }
         }
@@ -44,16 +64,57 @@ export const postChallenge = async (req, res, next) => {
 };
 
 export const getInProgressMissionsByMember = async (req, res, next) => {
-  /*
-    #swagger.summary = '진행 중인 미션 조회 API';
-    #swagger.parameters['memberId'] = { in: 'path', type: 'number', required: true };
-    #swagger.parameters['cursor'] = { in: 'query', type: 'number' };
+   /*
+    #swagger.summary = '진행 중인 미션 목록 조회 API';
+    #swagger.parameters['memberId'] = {
+      in: 'path',
+      required: true,
+      schema: { type: 'number', example: 2 }
+    };
+    #swagger.parameters['cursor'] = {
+      in: 'query',
+      required: false,
+      schema: { type: 'number', example: 0 }
+    };
     #swagger.responses[200] = {
-      description: "미션 목록",
+      description: "진행 중인 미션 목록 조회 성공",
       content: {
         "application/json": {
           schema: {
-            type: "object"
+            type: "object",
+            properties: {
+              missions: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    title: { type: "string" },
+                    deadline: { type: "string", format: "date" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "memberId 오류",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "INVALID_PARAM" },
+                  reason: { type: "string", example: "유효하지 않은 memberId 입니다." }
+                }
+              }
+            }
           }
         }
       }
@@ -75,17 +136,41 @@ export const getInProgressMissionsByMember = async (req, res, next) => {
 };
 
 export const markMissionAsCompleted = async (req, res, next) => {
-  /*
+ /*
     #swagger.summary = '미션 완료 처리 API';
-    #swagger.parameters['progressId'] = { in: 'path', type: 'number', required: true };
+    #swagger.parameters['progressId'] = {
+      in: 'path',
+      required: true,
+      schema: { type: 'number', example: 9 }
+    };
     #swagger.responses[200] = {
-      description: "완료 응답",
+      description: "미션 완료 성공",
       content: {
         "application/json": {
           schema: {
             type: "object",
             properties: {
-              message: { type: "string" }
+              message: { type: "string", example: "미션이 완료 처리되었습니다." }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "progressId 오류",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "INVALID_PARAM" },
+                  reason: { type: "string", example: "유효하지 않은 progressId입니다." }
+                }
+              }
             }
           }
         }
