@@ -44,23 +44,27 @@ enum FoodCategory {
 }
 
 model MEMBER {
-  member_id Int    @id @default(autoincrement())
-  username  String @db.VarChar(100)
-  email     String @db.VarChar(100)
-  gender    Gender
-  birth_date DateTime?
-  created_at DateTime?
-  updated_at DateTime?
+  member_id    Int      @id @default(autoincrement())
+  username     String   @db.VarChar(100)
+  email        String   @db.VarChar(100)
+  name         String?  @db.VarChar(100) // ← 추가
+  gender       Gender
+  birth_date   DateTime?
+  address      String?  @db.VarChar(255) // ← 추가
+  detailAddress String? @db.VarChar(255) // ← 추가
+  phoneNumber  String?  @db.VarChar(20)  // ← 추가
+  created_at   DateTime?
+  updated_at   DateTime?
 
-  missionProgresses MISSIONPROGRESS[]
-  reviews           REVIEW[]
-  pointHistories    POINTHISTORY[]
-  inquiries         INQUIRY[]
-  notificationSetting NOTIFICATIONSETTING?
-  termsAgreements   TERMSAGREEMENT[]
-  socialLogins      SOCIALLOGIN[]
-  addresses         ADDRESS[]
-  foodPreferences   FOODPREFERENCE[]
+  missionProgresses    MISSIONPROGRESS[]
+  reviews              REVIEW[]
+  pointHistories       POINTHISTORY[]
+  inquiries            INQUIRY[]
+  notificationSetting  NOTIFICATIONSETTING?
+  termsAgreements      TERMSAGREEMENT[]
+  socialLogins         SOCIALLOGIN[]
+  addresses            ADDRESS[]
+  foodPreferences      FOODPREFERENCE[]
 }
 
 model REGION {
@@ -208,4 +212,13 @@ model FOODPREFERENCE {
   category      FoodCategory
 
   member MEMBER @relation(fields: [member_id], references: [member_id])
+}
+
+model Session {
+  id        String   @id                      // 기본 키
+  sid       String   @unique                 // 세션 식별자 (고유)
+  data      String   @db.VarChar(512)        // 세션 데이터 (JSON 등)
+  expiresAt DateTime @map("expires_at")      // 컬럼 이름 변경
+
+  @@map("session")                           // 실제 DB 테이블명: session
 }

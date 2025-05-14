@@ -17,8 +17,14 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "mysql2": "^3.14.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
     "prisma": "^6.6.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
