@@ -2,7 +2,7 @@ import * as userRepo from "../repositories/user.repository.js";
 import { NotFoundError } from "../error.js";
 
 export const signUp = async (userData) => {
-  return await userRepo.createUser(userData);
+  return await userRepo.upsertUser(userData);
 };
 
 export const getUser = async (memberId) => {

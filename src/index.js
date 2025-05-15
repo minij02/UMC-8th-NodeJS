@@ -127,10 +127,14 @@ app.get("/oauth2/login/github", passport.authenticate("github", {
 }));
 
 // GitHub 콜백 처리
-app.get("/oauth2/callback/github", passport.authenticate("github", {
-  successRedirect: "/",
-  failureRedirect: "/login",
-}));
+app.get(
+  "/oauth2/callback/github",
+  passport.authenticate("github", { failureRedirect: "/login", session: true }),
+  (req, res) => {
+    // 로그인 성공 시 사용자 정보를 JSON으로 응답
+    return res.success(req.user);
+  }
+);
 
 app.post("/users", register);
 app.get("/users/:id", getUserInfo);

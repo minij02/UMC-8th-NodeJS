@@ -1,8 +1,17 @@
 import { prisma } from '../config/db.js';
 
-export const createUser = async ({ username, email, gender, birth_date }) => {
-  const result = await prisma.mEMBER.create({
-    data: {
+export const upsertUser = async ({ username, email, gender, birth_date }) => {
+  const existing = await prisma.mEMBER.findUnique({ where: { email } });
+
+  const result = await prisma.mEMBER.upsert({
+    where: { email },
+    update: {
+      username,
+      gender,
+      birth_date,
+      updated_at: new Date(),
+    },
+    create: {
       username,
       email,
       gender,
@@ -11,7 +20,11 @@ export const createUser = async ({ username, email, gender, birth_date }) => {
       updated_at: new Date(),
     },
   });
-  return result.member_id;
+
+  return {
+    member_id: result.member_id,
+    isNew: existing === null,
+  };
 };
 
 export const findUserById = async (member_id) => {

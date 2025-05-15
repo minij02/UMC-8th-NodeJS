@@ -21,6 +21,20 @@ export const register = async (req, res, next) => {
         }
       }
     };
+    #swagger.responses[200] = {
+  description: "회원 정보 갱신 성공 응답",
+  content: {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          memberId: { type: "number" },
+          message: { type: "string", example: "회원 정보 갱신" }
+        }
+      }
+    }
+  }
+};
     #swagger.responses[201] = {
       description: "회원가입 성공 응답",
       content: {
@@ -82,8 +96,11 @@ export const register = async (req, res, next) => {
   */
   try {
     const userData = validateSignUpDto(req.body);
-    const memberId = await userService.signUp(userData);
-    res.status(201).json({ message: "회원가입 성공", memberId });
+    const { member_id, isNew } = await userService.signUp(userData);
+res.status(isNew ? 201 : 200).json({
+  message: isNew ? "회원가입 성공" : "회원 정보 갱신",
+  memberId: member_id,
+});
   } catch (err) {
     next(err);
   }
